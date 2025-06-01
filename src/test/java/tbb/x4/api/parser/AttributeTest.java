@@ -1,8 +1,12 @@
-package tbb.x4.api.model;
+package tbb.x4.api.parser;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullSource;
+import tbb.x4.api.model.AttributeDescriptor;
+import tbb.x4.api.model.ElementName;
+import tbb.x4.api.model.ElementValue;
+import tbb.x4.api.model.ValueType;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -53,4 +57,5 @@ public class AttributeTest {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> new Attribute(descriptor, value));
         assertEquals("Value type does not match descriptor type", exception.getMessage());
     }
+
 }

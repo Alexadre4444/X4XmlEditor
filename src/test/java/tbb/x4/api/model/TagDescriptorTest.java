@@ -1,8 +1,10 @@
 package tbb.x4.api.model;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Collections;
 import java.util.Set;
@@ -26,7 +28,7 @@ public class TagDescriptorTest {
         );
 
         assertNotNull(descriptor);
-        assertEquals(name, descriptor.name().name());
+        assertEquals(name.toLowerCase(), descriptor.name().name());
         assertEquals(valueType, descriptor.valueType());
         assertEquals(description, descriptor.description());
     }
@@ -88,7 +90,8 @@ public class TagDescriptorTest {
     }
 
     @CsvSource({
-            "ParentName, PARENT, ParentDescription"
+            "ParentName, PARENT, ParentDescription",
+            "ParentName, UNKNOWN, ParentDescription"
     })
     @ParameterizedTest
     void validParentTagDescriptorShouldCreateInstance(String name, ValueType valueType, String description) {
@@ -101,8 +104,31 @@ public class TagDescriptorTest {
         );
 
         assertNotNull(descriptor);
-        assertEquals(name, descriptor.name().name());
+        assertEquals(name.toLowerCase(), descriptor.name().name());
         assertEquals(valueType, descriptor.valueType());
         assertEquals(description, descriptor.description());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"UNKNOWN"})
+    void unknownValueTypeShouldCreateInstance(String unknownValueType) {
+        assertDoesNotThrow(() -> new TagDescriptor(new ElementName("ValidName"), ValueType.valueOf(unknownValueType), "ValidDescription", Collections.emptySet(), Collections.emptySet()));
+    }
+
+    @Test
+    void idTagDescriptorShouldBeInAttributes() {
+        AttributeDescriptor idAttr = new AttributeDescriptor(new ElementName("id"), ValueType.STRING, "desc");
+        Set<AttributeDescriptor> attrs = Set.of(idAttr);
+        TagDescriptor tag = new TagDescriptor(
+                new ElementName("withId"),
+                ValueType.STRING,
+                "desc",
+                idAttr,
+                attrs,
+                Collections.emptySet()
+        );
+        assertNotNull(tag);
+        assertEquals(idAttr, tag.idTagDescriptor());
+        assertTrue(tag.attributes().contains(idAttr));
     }
 }

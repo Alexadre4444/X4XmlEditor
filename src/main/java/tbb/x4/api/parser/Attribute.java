@@ -1,4 +1,7 @@
-package tbb.x4.api.model;
+package tbb.x4.api.parser;
+
+import tbb.x4.api.model.AttributeDescriptor;
+import tbb.x4.api.model.ElementValue;
 
 public record Attribute(AttributeDescriptor descriptor, ElementValue value) {
     public Attribute {
@@ -11,5 +14,9 @@ public record Attribute(AttributeDescriptor descriptor, ElementValue value) {
         if (!descriptor.valueType().equals(value.valueType())) {
             throw new IllegalArgumentException("Value type does not match descriptor type");
         }
+    }
+
+    public Attribute(AttributeDescriptor descriptor, String value) {
+        this(descriptor, new ElementValue(value, descriptor.valueType()));
     }
 }

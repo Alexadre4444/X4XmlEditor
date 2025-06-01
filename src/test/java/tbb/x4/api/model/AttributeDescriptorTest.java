@@ -37,11 +37,18 @@ public class AttributeDescriptorTest {
             () -> new AttributeDescriptor(new ElementName("ValidName"), ValueType.STRING, invalidDescription));
         assertEquals("Description cannot be null", exception.getMessage());
     }
+
     @ParameterizedTest
     @ValueSource(strings = {"PARENT"})
     void invalidValueTypeShouldThrowException(String invalidValueType) {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
             () -> new AttributeDescriptor(new ElementName("ValidName"), ValueType.valueOf(invalidValueType), "Valid description"));
         assertEquals("ValueType cannot be PARENT", exception.getMessage());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"UNKNOWN"})
+    void unknownValueTypeShouldCreateInstance(String unknownValueType) {
+        assertDoesNotThrow(() -> new AttributeDescriptor(new ElementName("ValidName"), ValueType.valueOf(unknownValueType), "Valid description"));
     }
 }
