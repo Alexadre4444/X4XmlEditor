@@ -12,19 +12,19 @@ public class XDirectoryServiceTest {
     XDirectoryService xDirectoryService = new XDirectoryService();
 
     @Test
-    public void isXBaseDirectory_shouldNotThrow_ifContainsJobEditorFile() {
+    public void isXBaseDirectory_expectedTrue_ifContainsJobEditorFile() {
         File validDir = new File("src/test/resources/directory/x4ValidDir");
         assertTrue(xDirectoryService.isXBaseDirectory(validDir));
     }
 
     @Test
-    public void isXBaseDirectory_shouldReturnFalse_ifDoesNotContainJobEditorFile() {
+    public void isXBaseDirectory_expectedFalse_ifDoesNotContainJobEditorFile() {
         File invalidDir = new File("src/test/resources/directory/x4InvalidDir");
         assertFalse(xDirectoryService.isXBaseDirectory(invalidDir));
     }
 
     @Test
-    public void parseXBaseDirectory_shouldReturnXDirectory() {
+    public void parseXBaseDirectory_expectedXDirectory_ifValidDirectory() {
         File validDir = new File("src/test/resources/directory");
         XDirectory xDirectory = xDirectoryService.parseXBaseDirectory(validDir);
         assertTrue(xDirectory.isDirectory());
@@ -38,12 +38,19 @@ public class XDirectoryServiceTest {
         assertTrue(validDirChild.get().isDirectory());
 
         XDirectory validChildDir = (XDirectory) validDirChild.get();
-        assertEquals(0, validChildDir.children().size());
+        assertEquals(1, validChildDir.children().size());
+
+        Optional<XFsElement> jobEditorFile = validChildDir.children().stream()
+                .filter(child -> child.name().equals("jobeditor.html"))
+                .findFirst();
+        assertTrue(jobEditorFile.isPresent());
+        assertFalse(jobEditorFile.get().isDirectory());
+        assertInstanceOf(XFile.class, jobEditorFile.get());
+        assertEquals("jobeditor.html", jobEditorFile.get().name());
 
         Optional<XFsElement> invalidDirChild = xDirectory.children().stream()
                 .filter(child -> child.name().equals("x4InvalidDir"))
                 .findFirst();
         assertTrue(invalidDirChild.isPresent());
-
     }
 }

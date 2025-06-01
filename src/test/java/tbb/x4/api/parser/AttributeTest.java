@@ -16,7 +16,7 @@ public class AttributeTest {
             "descriptor1, value1, STRING",
             "descriptor2, 1.1, NUMBER"
     })
-    void validAttributeShouldCreateInstance(String descriptorName, String value, ValueType valueType) {
+    void constructor_expectedCreateInstance_ifDescriptorAndValueAreValid(String descriptorName, String value, ValueType valueType) {
         AttributeDescriptor descriptor = new AttributeDescriptor(new ElementName(descriptorName), valueType, "description");
         ElementValue elementValue = new ElementValue(value, valueType);
 
@@ -29,7 +29,7 @@ public class AttributeTest {
 
     @ParameterizedTest
     @NullSource
-    void nullDescriptorShouldThrowException(AttributeDescriptor descriptor) {
+    void constructor_expectedException_ifDescriptorIsNull(AttributeDescriptor descriptor) {
         ElementValue value = new ElementValue("value", ValueType.STRING);
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> new Attribute(descriptor, value));
@@ -38,7 +38,7 @@ public class AttributeTest {
 
     @ParameterizedTest
     @NullSource
-    void nullValueShouldThrowException(ElementValue value) {
+    void constructor_expectedException_ifValueIsNull(ElementValue value) {
         AttributeDescriptor descriptor = new AttributeDescriptor(new ElementName("descriptor"), ValueType.STRING, "description");
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> new Attribute(descriptor, value));
@@ -50,7 +50,7 @@ public class AttributeTest {
             "descriptor1, STRING, NUMBER",
             "descriptor2, NUMBER, STRING"
     })
-    void mismatchedValueTypeShouldThrowException(String descriptorName, ValueType descriptorValueType, ValueType valueType) {
+    void constructor_expectedException_ifValueTypeMismatch(String descriptorName, ValueType descriptorValueType, ValueType valueType) {
         AttributeDescriptor descriptor = new AttributeDescriptor(new ElementName(descriptorName), descriptorValueType, "description");
         ElementValue value = new ElementValue("1", valueType);
 

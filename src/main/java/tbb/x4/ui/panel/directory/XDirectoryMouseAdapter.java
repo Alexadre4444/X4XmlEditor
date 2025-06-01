@@ -1,0 +1,42 @@
+package tbb.x4.ui.panel.directory;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import org.jboss.logging.Logger;
+import tbb.x4.api.directory.XFile;
+import tbb.x4.ui.panel.editor.XEditor;
+
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.Objects;
+
+@ApplicationScoped
+public class XDirectoryMouseAdapter extends MouseAdapter {
+    private static final Logger LOGGER = Logger.getLogger(XEditor.class);
+
+    private final XDirectoryPanel xDirectoryPanel;
+    private final XEditor xEditor;
+
+    @Inject
+    public XDirectoryMouseAdapter(XDirectoryPanel xDirectoryPanel, XEditor xEditor) {
+        this.xDirectoryPanel = xDirectoryPanel;
+        this.xEditor = xEditor;
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        int selRow = xDirectoryPanel.tree().getRowForLocation(e.getX(), e.getY());
+        TreePath selPath = xDirectoryPanel.tree().getPathForLocation(e.getX(), e.getY());
+        if (selRow != -1 && selPath != null) {
+            if (e.getClickCount() == 2) {
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode) selPath.getLastPathComponent();
+                Object userObject = node.getUserObject();
+                if (Objects.requireNonNull(userObject) instanceof XFile file) {
+                    xEditor.openFile(file);
+                }
+            }
+        }
+    }
+}

@@ -31,7 +31,9 @@ public class XItemOpen implements IMenuItem {
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         int returnValue = fileChooser.showOpenDialog(null);
         if (returnValue == JFileChooser.APPROVE_OPTION) {
-            if (!directoryService.isXBaseDirectory(fileChooser.getSelectedFile())) {
+            if (directoryService.isXBaseDirectory(fileChooser.getSelectedFile())) {
+                xFrame.openDirectory(fileChooser.getSelectedFile());
+            } else {
                 int response = JOptionPane.showConfirmDialog(null,
                         "Selected directory does not seem to be a valid X4 directory. Do you want to continue?",
                         "X4 directory", YES_NO_OPTION);

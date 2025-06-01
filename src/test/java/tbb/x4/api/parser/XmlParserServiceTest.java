@@ -16,7 +16,7 @@ public class XmlParserServiceTest {
     IXmlParserService xmlParserService = new XmlParserService(descriptorRepository);
 
     @Test
-    public void parseFile_shouldNotThrow_ifSimpleFile() throws IOException {
+    public void parseFile_expectedNoException_ifSimpleFile() throws IOException {
         // Assuming you have a valid XML file path
         String xmlFilePath = "src/test/resources/parser/wares_simple.xml";
         try (FileInputStream inputStream = new FileInputStream(xmlFilePath)) {
@@ -68,7 +68,7 @@ public class XmlParserServiceTest {
     }
 
     @Test
-    public void parseFile_shouldNotThrow_ifFullWaresFile() throws IOException {
+    public void parseFile_expectedNoException_ifFullWaresFile() throws IOException {
         // Assuming you have a valid XML file path
         String xmlFilePath = "src/test/resources/parser/wares.xml";
         try (FileInputStream inputStream = new FileInputStream(xmlFilePath)) {

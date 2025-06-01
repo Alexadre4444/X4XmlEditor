@@ -3,6 +3,7 @@ package tbb.x4.imp.parser;
 import jakarta.enterprise.context.ApplicationScoped;
 import tbb.x4.api.directory.IXDirectoryService;
 import tbb.x4.api.directory.XDirectory;
+import tbb.x4.api.directory.XFile;
 import tbb.x4.api.directory.XFsElement;
 
 import java.io.File;
@@ -27,9 +28,17 @@ public class XDirectoryService implements IXDirectoryService {
     private List<XFsElement> parseChildren(File directory) {
         File[] files = directory.listFiles();
         return Arrays.stream(Objects.requireNonNull(files))
-                .filter(File::isDirectory)
-                .map(child -> new XDirectory(child.toPath(), parseChildren(child)))
-                .map(XFsElement.class::cast)
+                .map(this::parseFile)
                 .toList();
+    }
+
+    private XFsElement parseFile(File file) {
+        XFsElement element;
+        if (file.isDirectory()) {
+            element = new XDirectory(file.toPath(), parseChildren(file));
+        } else {
+            element = new XFile(file.toPath());
+        }
+        return element;
     }
 }

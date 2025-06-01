@@ -2,7 +2,7 @@ package tbb.x4.api.directory;
 
 import java.nio.file.Path;
 
-public sealed interface XFsElement permits XDirectory {
+public sealed interface XFsElement permits XDirectory, XFile {
     /**
      * Returns the name of the element.
      *

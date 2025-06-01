@@ -18,7 +18,7 @@ public class TagDescriptorTest {
             "ValidName, STRING, ValidDescription",
             "AnotherName, NUMBER, AnotherDescription"
     })
-    void validTagDescriptorShouldCreateInstance(String name, ValueType valueType, String description) {
+    void constructor_expectedCreateInstance_ifValidTagDescriptor(String name, ValueType valueType, String description) {
         TagDescriptor descriptor = new TagDescriptor(
                 new ElementName(name),
                 valueType,
@@ -35,7 +35,7 @@ public class TagDescriptorTest {
 
     @ParameterizedTest
     @NullSource
-    void nullNameShouldThrowException(ElementName name) {
+    void constructor_expectedException_ifNameIsNull(ElementName name) {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> new TagDescriptor(name, ValueType.STRING, "ValidDescription", Collections.emptySet(), Collections.emptySet()));
         assertEquals("Name cannot be null", exception.getMessage());
@@ -43,7 +43,7 @@ public class TagDescriptorTest {
 
     @ParameterizedTest
     @NullSource
-    void nullValueTypeShouldThrowException(ValueType valueType) {
+    void constructor_expectedException_ifValueTypeIsNull(ValueType valueType) {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> new TagDescriptor(new ElementName("ValidName"), valueType, "ValidDescription", Collections.emptySet(), Collections.emptySet()));
         assertEquals("ValueType cannot be null", exception.getMessage());
@@ -51,7 +51,7 @@ public class TagDescriptorTest {
 
     @ParameterizedTest
     @NullSource
-    void nullDescriptionShouldThrowException(String description) {
+    void constructor_expectedException_ifDescriptionIsNull(String description) {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> new TagDescriptor(new ElementName("ValidName"), ValueType.STRING, description, Collections.emptySet(), Collections.emptySet()));
         assertEquals("Description cannot be null", exception.getMessage());
@@ -61,7 +61,7 @@ public class TagDescriptorTest {
     @CsvSource({
             "NonParentName, STRING, NonParentDescription"
     })
-    void nonParentTagDescriptorWithNonEmptySubTagsShouldThrowException(String name, ValueType valueType, String description) {
+    void constructor_expectedException_ifNonParentWithNonEmptySubTags(String name, ValueType valueType, String description) {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> new TagDescriptor(
                         new ElementName(name),
@@ -77,7 +77,7 @@ public class TagDescriptorTest {
             "ParentName, PARENT, ParentDescription"
     })
     @ParameterizedTest
-    void parentTagDescriptorWithEmptySubTagsShouldThrowException(String name, ValueType valueType, String description) {
+    void constructor_expectedException_ifParentWithEmptySubTags(String name, ValueType valueType, String description) {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> new TagDescriptor(
                         new ElementName(name),
@@ -94,7 +94,7 @@ public class TagDescriptorTest {
             "ParentName, UNKNOWN, ParentDescription"
     })
     @ParameterizedTest
-    void validParentTagDescriptorShouldCreateInstance(String name, ValueType valueType, String description) {
+    void constructor_expectedCreateInstance_ifParentOrUnknownWithSubTags(String name, ValueType valueType, String description) {
         TagDescriptor descriptor = new TagDescriptor(
                 new ElementName(name),
                 valueType,
@@ -111,12 +111,12 @@ public class TagDescriptorTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"UNKNOWN"})
-    void unknownValueTypeShouldCreateInstance(String unknownValueType) {
+    void constructor_expectedNoException_ifValueTypeIsUnknown(String unknownValueType) {
         assertDoesNotThrow(() -> new TagDescriptor(new ElementName("ValidName"), ValueType.valueOf(unknownValueType), "ValidDescription", Collections.emptySet(), Collections.emptySet()));
     }
 
     @Test
-    void idTagDescriptorShouldBeInAttributes() {
+    void idTagDescriptor_expectedInAttributes_ifIdAttributePresent() {
         AttributeDescriptor idAttr = new AttributeDescriptor(new ElementName("id"), ValueType.STRING, "desc");
         Set<AttributeDescriptor> attrs = Set.of(idAttr);
         TagDescriptor tag = new TagDescriptor(

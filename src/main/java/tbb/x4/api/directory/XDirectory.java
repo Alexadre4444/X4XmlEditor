@@ -22,4 +22,9 @@ public record XDirectory(Path path, List<XFsElement> children) implements XFsEle
     public boolean isDirectory() {
         return true;
     }
+
+    @Override
+    public String toString() {
+        return name();
+    }
 }

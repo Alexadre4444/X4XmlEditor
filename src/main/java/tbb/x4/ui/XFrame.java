@@ -29,7 +29,7 @@ public class XFrame {
 
     public void init() {
         LOGGER.info("Initializing X4 Xml Editor");
-        FlatDarkLaf.setup();
+        setupTheme();
         GraphicsEnvironment graphics =
                 GraphicsEnvironment.getLocalGraphicsEnvironment();
         GraphicsDevice device = graphics.getDefaultScreenDevice();
@@ -49,5 +49,11 @@ public class XFrame {
 
     public void exit() {
         frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+    }
+
+    private void setupTheme() {
+        FlatDarkLaf.setup();
+        UIManager.put("Tree.paintLines", true);
+        UIManager.put("Tree.showDefaultIcons", true);
     }
 }
