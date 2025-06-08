@@ -1,10 +1,8 @@
 package tbb.x4.api.parser;
 
-import tbb.x4.api.model.AttributeDescriptor;
-import tbb.x4.api.model.ElementName;
-import tbb.x4.api.model.IDescriptorRepository;
-import tbb.x4.api.model.TagDescriptor;
+import tbb.x4.api.model.*;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -26,6 +24,12 @@ class DescriptorRepositoryMock implements IDescriptorRepository {
     public static final List<TagDescriptor> ROOT_TAG_DESCRIPTORS = List.of(
             WARES
     );
+    private static final CollectionDescriptor WARES_PRODUCTION_COLLECTION =
+            new CollectionDescriptor(new ElementName("productions"), Path.of("libraries", "wares.xml"),
+                    new ElementPath("wares", "production"), WARES_PRODUCTION);
+    private static final List<CollectionDescriptor> COLLECTION_DESCRIPTORS = List.of(
+            WARES_PRODUCTION_COLLECTION
+    );
 
     @Override
     public Optional<TagDescriptor> getTagDescriptor(ElementName tagName) {
@@ -42,5 +46,10 @@ class DescriptorRepositoryMock implements IDescriptorRepository {
     @Override
     public AttributeDescriptor getUnknowAttributeDescriptor(ElementName elementName) {
         return new AttributeDescriptor(elementName, UNKNOWN, "Unknown attribute");
+    }
+
+    @Override
+    public List<CollectionDescriptor> getCollectionDescriptors() {
+        return COLLECTION_DESCRIPTORS;
     }
 }

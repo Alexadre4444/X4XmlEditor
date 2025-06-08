@@ -20,7 +20,8 @@ public class XmlParserServiceTest {
         // Assuming you have a valid XML file path
         String xmlFilePath = "src/test/resources/parser/wares_simple.xml";
         try (FileInputStream inputStream = new FileInputStream(xmlFilePath)) {
-            List<Tag> tags = assertDoesNotThrow(() -> xmlParserService.parseFile(inputStream));
+            ParsedFile parsedFile = assertDoesNotThrow(() -> xmlParserService.parseFile(inputStream));
+            List<Tag> tags = parsedFile.tags();
             assertEquals(1, tags.size());
 
             Tag tagWares = tags.getFirst();
@@ -72,7 +73,7 @@ public class XmlParserServiceTest {
         // Assuming you have a valid XML file path
         String xmlFilePath = "src/test/resources/parser/wares.xml";
         try (FileInputStream inputStream = new FileInputStream(xmlFilePath)) {
-            List<Tag> tags = assertDoesNotThrow(() -> xmlParserService.parseFile(inputStream));
+            assertDoesNotThrow(() -> xmlParserService.parseFile(inputStream));
         }
     }
 }

@@ -1,8 +1,14 @@
 package tbb.x4.api.parser;
 
 import java.io.FileInputStream;
-import java.util.List;
 
 public interface IXmlParserService {
-    List<Tag> parseFile(FileInputStream inputStream);
+    /**
+     * Parses an XML file from the given input stream and returns a list of tags.
+     *
+     * @param inputStream the input stream of the XML file to parse
+     * @return a list of tags parsed from the XML file
+     * @throws ParsingException if an error occurs during parsing
+     */
+    ParsedFile parseFile(FileInputStream inputStream);
 }

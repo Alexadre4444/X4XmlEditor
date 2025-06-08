@@ -1,5 +1,6 @@
 package tbb.x4.api.model;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -31,4 +32,11 @@ public interface IDescriptorRepository {
      * @return the {@link AttributeDescriptor} associated with the attribute
      */
     AttributeDescriptor getUnknowAttributeDescriptor(ElementName elementName);
+
+    /**
+     * Retrieves a list of all collection descriptors.
+     *
+     * @return a list of {@link CollectionDescriptor} objects
+     */
+    List<CollectionDescriptor> getCollectionDescriptors();
 }

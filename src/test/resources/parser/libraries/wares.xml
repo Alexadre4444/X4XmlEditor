@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Last exported: 10.12.2024 15:15:48-->
+<wares>
+    <production>
+        <!-- Comment for the production section -->
+        <method id="argon" name="{20206,201}">
+            <default race="argon"/>
+            <!-- Test comment -->
+            <unknown pouet="10">Unknown content</unknown>
+        </method>
+    </production>
+</wares>

@@ -26,14 +26,17 @@ public class TagTest {
         assertEquals(name.toLowerCase(), descriptor.name().name());
         assertEquals(valueType, descriptor.valueType());
         assertEquals(description, descriptor.description());
-        assertEquals(1, descriptor.subTags().size());
-        assertTrue(descriptor.subTags().contains(childTag));
+        if (!ValueType.UNKNOWN.equals(valueType)) {
+            assertEquals(1, descriptor.subTags().size());
+            assertTrue(descriptor.subTags().contains(childTag));
+        }
     }
 
     @ParameterizedTest
     @CsvSource({
             "ValidName, STRING, ValidDescription, AttributeName, STRING, AttributeDescription",
-            "AnotherName, NUMBER, AnotherDescription, AnotherAttribute, NUMBER, AnotherAttributeDescription"
+            "AnotherName, NUMBER, AnotherDescription, AnotherAttribute, NUMBER, AnotherAttributeDescription",
+            "UnknownName, UNKNOWN, UnknownDescription, UnknownAttribute, UNKNOWN, UnknownAttributeDescription"
     })
     void constructor_expectedCreateInstance_ifTagDescriptorWithAttributesValid(String name, ValueType valueType, String description, String attributeName, ValueType attributeValueType, String attributeDescription) {
         AttributeDescriptor attribute = new AttributeDescriptor(new ElementName(attributeName), attributeValueType, attributeDescription);
@@ -43,8 +46,10 @@ public class TagTest {
         assertEquals(name.toLowerCase(), descriptor.name().name());
         assertEquals(valueType, descriptor.valueType());
         assertEquals(description, descriptor.description());
-        assertEquals(1, descriptor.attributes().size());
-        assertTrue(descriptor.attributes().contains(attribute));
+        if (!ValueType.UNKNOWN.equals(valueType)) {
+            assertEquals(1, descriptor.attributes().size());
+            assertTrue(descriptor.attributes().contains(attribute));
+        }
     }
 
     @ParameterizedTest
@@ -165,4 +170,65 @@ public class TagTest {
         assertTrue(tag.attribute("notfound").isEmpty());
         assertTrue(tag.attribute(new ElementName("notfound")).isEmpty());
     }
+
+    @Test
+    void findIdAttribute_expectedReturnIdAttribute_ifPresent() {
+        AttributeDescriptor idAttrDesc = new AttributeDescriptor(new ElementName("id"), ValueType.STRING, "ID attribute");
+        AttributeDescriptor otherAttrDesc = new AttributeDescriptor(new ElementName("other"), ValueType.STRING, "Other attribute");
+        TagDescriptor tagDescriptor = new TagDescriptor(
+                new ElementName("tag"), ValueType.STRING, "desc", idAttrDesc, Set.of(idAttrDesc, otherAttrDesc), Collections.emptySet());
+        Attribute idAttr = new Attribute(idAttrDesc, "42");
+        Attribute otherAttr = new Attribute(otherAttrDesc, "foo");
+        Tag tag = new Tag(tagDescriptor, new ElementValue("val", ValueType.STRING), List.of(idAttr, otherAttr), Collections.emptyList());
+        assertTrue(tag.findIdAttribute().isPresent());
+        assertEquals(idAttr, tag.findIdAttribute().get());
+    }
+
+    @Test
+    void findIdAttribute_expectedReturnEmpty_ifNotPresent() {
+        AttributeDescriptor idAttrDesc = new AttributeDescriptor(new ElementName("id"), ValueType.STRING, "ID attribute");
+        AttributeDescriptor otherAttrDesc = new AttributeDescriptor(new ElementName("other"), ValueType.STRING, "Other attribute");
+        TagDescriptor tagDescriptor = new TagDescriptor(
+                new ElementName("tag"), ValueType.STRING, "desc", idAttrDesc, Set.of(idAttrDesc, otherAttrDesc), Collections.emptySet());
+        Attribute otherAttr = new Attribute(otherAttrDesc, "foo");
+        Tag tag = new Tag(tagDescriptor, new ElementValue("val", ValueType.STRING), List.of(otherAttr), Collections.emptyList());
+        assertTrue(tag.findIdAttribute().isEmpty());
+    }
+
+    @Test
+    void find_expectedReturnSubTag_ifSubTagExists() {
+        TagDescriptor childDesc = new TagDescriptor(new ElementName("child"), ValueType.STRING, "child desc", Collections.emptySet(), Collections.emptySet());
+        TagDescriptor parentDesc = new TagDescriptor(new ElementName("parent"), ValueType.PARENT, "parent desc", Collections.emptySet(), Set.of(childDesc));
+        Tag childTag = new Tag(childDesc, new ElementValue("val", ValueType.STRING), Collections.emptyList(), Collections.emptyList());
+        Tag parentTag = new Tag(parentDesc, null, Collections.emptyList(), List.of(childTag));
+        ElementPath path = new ElementPath(List.of(new ElementName("child")));
+        List<Tag> found = parentTag.find(path);
+        assertEquals(1, found.size());
+        assertEquals(childTag, found.get(0));
+    }
+
+    @Test
+    void find_expectedReturnEmpty_ifSubTagNotExists() {
+        TagDescriptor childDesc = new TagDescriptor(new ElementName("child"), ValueType.STRING, "child desc", Collections.emptySet(), Collections.emptySet());
+        TagDescriptor parentDesc = new TagDescriptor(new ElementName("parent"), ValueType.PARENT, "parent desc", Collections.emptySet(), Set.of(childDesc));
+        Tag parentTag = new Tag(parentDesc, null, Collections.emptyList(), Collections.emptyList());
+        ElementPath path = new ElementPath(List.of(new ElementName("child")));
+        List<Tag> found = parentTag.find(path);
+        assertTrue(found.isEmpty());
+    }
+
+    @Test
+    void find_expectedReturnNestedSubTag_ifPathMatches() {
+        TagDescriptor grandChildDesc = new TagDescriptor(new ElementName("grandchild"), ValueType.STRING, "grandchild desc", Collections.emptySet(), Collections.emptySet());
+        TagDescriptor childDesc = new TagDescriptor(new ElementName("child"), ValueType.PARENT, "child desc", Collections.emptySet(), Set.of(grandChildDesc));
+        TagDescriptor parentDesc = new TagDescriptor(new ElementName("parent"), ValueType.PARENT, "parent desc", Collections.emptySet(), Set.of(childDesc));
+        Tag grandChildTag = new Tag(grandChildDesc, new ElementValue("val", ValueType.STRING), Collections.emptyList(), Collections.emptyList());
+        Tag childTag = new Tag(childDesc, null, Collections.emptyList(), List.of(grandChildTag));
+        Tag parentTag = new Tag(parentDesc, null, Collections.emptyList(), List.of(childTag));
+        ElementPath path = new ElementPath(List.of(new ElementName("child"), new ElementName("grandchild")));
+        List<Tag> found = parentTag.find(path);
+        assertEquals(1, found.size());
+        assertEquals(grandChildTag, found.get(0));
+    }
+
 }

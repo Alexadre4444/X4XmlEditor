@@ -1,27 +1,37 @@
 package tbb.x4.imp.model;
 
-import tbb.x4.api.model.AttributeDescriptor;
-import tbb.x4.api.model.ElementName;
-import tbb.x4.api.model.IDescriptorRepository;
-import tbb.x4.api.model.TagDescriptor;
+import jakarta.enterprise.context.ApplicationScoped;
+import tbb.x4.api.model.*;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 import static tbb.x4.api.model.ValueType.*;
 
+@ApplicationScoped
 public class DescriptorRepository implements IDescriptorRepository {
-    private static final AttributeDescriptor ID = new AttributeDescriptor(new ElementName("id"), STRING, "Unique identifier");
-    private static final AttributeDescriptor NAME = new AttributeDescriptor(new ElementName("name"), STRING, "UI Name");
-    private static final TagDescriptor WARES_PRODUCTION_METHOD =
-            new TagDescriptor(new ElementName("production"), PARENT, "Production", Set.of(ID, NAME), Set.of());
-    private static final TagDescriptor WARES_PRODUCTION =
-            new TagDescriptor(new ElementName("production"), PARENT, "Wares", Set.of(), Set.of(WARES_PRODUCTION_METHOD));
-    private static final TagDescriptor WARES =
+    public static final AttributeDescriptor ID = new AttributeDescriptor(new ElementName("id"), STRING, "Unique identifier");
+    public static final AttributeDescriptor NAME = new AttributeDescriptor(new ElementName("name"), STRING, "UI Name");
+    public static final AttributeDescriptor RACE = new AttributeDescriptor(new ElementName("race"), STRING, "Race id");
+    public static final TagDescriptor WARES_PRODUCTION_METHOD_DEFAULT =
+            new TagDescriptor(new ElementName("default"), STRING, "Default", Set.of(RACE), Set.of());
+    public static final TagDescriptor WARES_PRODUCTION_METHOD =
+            new TagDescriptor(new ElementName("method"), PARENT, "Method", ID, Set.of(ID, NAME),
+                    Set.of(WARES_PRODUCTION_METHOD_DEFAULT));
+    public static final TagDescriptor WARES_PRODUCTION =
+            new TagDescriptor(new ElementName("production"), PARENT, "Production", Set.of(), Set.of(WARES_PRODUCTION_METHOD));
+    public static final TagDescriptor WARES =
             new TagDescriptor(new ElementName("wares"), PARENT, "Wares", Set.of(), Set.of(WARES_PRODUCTION));
-    private static final List<TagDescriptor> ROOT_TAG_DESCRIPTORS = List.of(
+    public static final List<TagDescriptor> ROOT_TAG_DESCRIPTORS = List.of(
             WARES
+    );
+    private static final CollectionDescriptor WARES_PRODUCTION_METHOD_COLLECTION =
+            new CollectionDescriptor(new ElementName("Methods"), Path.of("libraries", "wares.xml"),
+                    new ElementPath("wares", "production", "method"), WARES_PRODUCTION);
+    private static final List<CollectionDescriptor> COLLECTION_DESCRIPTORS = List.of(
+            WARES_PRODUCTION_METHOD_COLLECTION
     );
 
     @Override
@@ -39,5 +49,10 @@ public class DescriptorRepository implements IDescriptorRepository {
     @Override
     public AttributeDescriptor getUnknowAttributeDescriptor(ElementName elementName) {
         return new AttributeDescriptor(elementName, UNKNOWN, "Unknown attribute");
+    }
+
+    @Override
+    public List<CollectionDescriptor> getCollectionDescriptors() {
+        return COLLECTION_DESCRIPTORS;
     }
 }

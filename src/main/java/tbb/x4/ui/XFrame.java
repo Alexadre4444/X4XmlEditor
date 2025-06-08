@@ -10,7 +10,6 @@ import tbb.x4.ui.panel.XMainPanel;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowEvent;
-import java.io.File;
 
 @ApplicationScoped
 public class XFrame {
@@ -38,13 +37,7 @@ public class XFrame {
         frame.setJMenuBar(xMenuBar.menuBar());
         frame.setSize(device.getDisplayMode().getWidth(), device.getDisplayMode().getHeight());
         frame.setVisible(true);
-    }
-
-    public void openDirectory(File directory) {
-        LOGGER.infof("Opening directory: %s", directory.getAbsolutePath());
-        xMainPanel.openDirectory(directory);
         frame.add(xMainPanel.mainPanel());
-        frame.revalidate();
     }
 
     public void exit() {
