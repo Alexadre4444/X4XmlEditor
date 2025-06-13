@@ -14,6 +14,7 @@ import tbb.x4.api.view.IDataView;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 import java.awt.*;
 
 @ApplicationScoped
@@ -21,18 +22,23 @@ public class DirectoryView implements IDataView {
 
     private final XDirectoryViewMouseAdapter mouseAdapter;
     private final Event<DataViewUpdatedEvent> dataViewUpdatedEvent;
-    private JTree tree;
+    private final JTree tree;
 
     @Inject
     public DirectoryView(XDirectoryViewMouseAdapter mouseAdapter, Event<DataViewUpdatedEvent> dataViewUpdatedEvent) {
         this.mouseAdapter = mouseAdapter;
         this.dataViewUpdatedEvent = dataViewUpdatedEvent;
+        tree = new JTree(new DefaultTreeModel(createDefaultRootNode()));
+        tree.setCellRenderer(new DirectoryTreeCellRenderer());
+        tree.addMouseListener(mouseAdapter);
+    }
+
+    private DefaultMutableTreeNode createDefaultRootNode() {
+        return new DefaultMutableTreeNode("Root Directory");
     }
 
     private void loadCollections(XDirectory directory) {
-        tree = new JTree(createTreeNode(directory));
-        tree.setCellRenderer(new DirectoryTreeCellRenderer());
-        tree.addMouseListener(mouseAdapter);
+        tree.setModel(new DefaultTreeModel(createTreeNode(directory)));
         dataViewUpdatedEvent.fire(new DataViewUpdatedEvent(this));
     }
 
@@ -69,10 +75,5 @@ public class DirectoryView implements IDataView {
     @Override
     public Icon icon() {
         return null;
-    }
-
-    @Override
-    public int priority() {
-        return 1;
     }
 }

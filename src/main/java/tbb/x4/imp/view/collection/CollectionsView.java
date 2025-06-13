@@ -13,6 +13,7 @@ import tbb.x4.api.view.IDataView;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 import java.awt.*;
 import java.util.List;
 
@@ -20,11 +21,13 @@ import java.util.List;
 public class CollectionsView implements IDataView {
 
     private final Event<DataViewUpdatedEvent> dataViewUpdatedEvent;
-    private JTree tree;
+    private final JTree tree;
 
     @Inject
-    public CollectionsView(Event<DataViewUpdatedEvent> dataViewUpdatedEvent) {
+    public CollectionsView(Event<DataViewUpdatedEvent> dataViewUpdatedEvent, CollectionsViewMouseAdapter mouseAdapter) {
         this.dataViewUpdatedEvent = dataViewUpdatedEvent;
+        tree = new JTree(new DefaultTreeModel(createDefaultRootNode()));
+        tree.addMouseListener(mouseAdapter);
     }
 
     public void onCollectionsLoad(@Observes CollectionsLoadEvent event) {
@@ -32,12 +35,16 @@ public class CollectionsView implements IDataView {
     }
 
     public void loadCollections(List<Collection> collections) {
-        tree = new JTree(createTreeNode(collections));
+        tree.setModel(new DefaultTreeModel(createTreeNode(collections)));
         dataViewUpdatedEvent.fire(new DataViewUpdatedEvent(this));
     }
 
+    private DefaultMutableTreeNode createDefaultRootNode() {
+        return new DefaultMutableTreeNode("Collections");
+    }
+
     private DefaultMutableTreeNode createTreeNode(List<Collection> collections) {
-        DefaultMutableTreeNode root = new DefaultMutableTreeNode("Collections");
+        DefaultMutableTreeNode root = createDefaultRootNode();
         for (Collection collection : collections) {
             DefaultMutableTreeNode collectionNode = new DefaultMutableTreeNode(collection);
             for (Tag tag : collection.elements()) {
@@ -66,10 +73,5 @@ public class CollectionsView implements IDataView {
     @Override
     public Icon icon() {
         return null;
-    }
-
-    @Override
-    public int priority() {
-        return 0;
     }
 }

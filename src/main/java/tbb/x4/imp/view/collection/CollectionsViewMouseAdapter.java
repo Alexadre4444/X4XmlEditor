@@ -1,9 +1,10 @@
-package tbb.x4.imp.view.directory;
+package tbb.x4.imp.view.collection;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Event;
 import jakarta.inject.Inject;
 import org.jboss.logging.Logger;
-import tbb.x4.api.directory.XFile;
+import tbb.x4.api.parser.Tag;
 import tbb.x4.ui.panel.editor.XEditorPanel;
 
 import javax.swing.*;
@@ -14,21 +15,21 @@ import java.awt.event.MouseEvent;
 import java.util.Objects;
 
 @ApplicationScoped
-public class XDirectoryViewMouseAdapter extends MouseAdapter {
+public class CollectionsViewMouseAdapter extends MouseAdapter {
     private static final Logger LOGGER = Logger.getLogger(XEditorPanel.class);
 
-    private final DirectoryView directoryView;
-    private final XEditorPanel xEditorPanel;
+    private final CollectionsView collectionsView;
+    private final Event<OpenTagEvent> openTagEvent;
 
     @Inject
-    public XDirectoryViewMouseAdapter(DirectoryView directoryView, XEditorPanel xEditorPanel) {
-        this.directoryView = directoryView;
-        this.xEditorPanel = xEditorPanel;
+    public CollectionsViewMouseAdapter(CollectionsView collectionsView, Event<OpenTagEvent> openTagEvent) {
+        this.collectionsView = collectionsView;
+        this.openTagEvent = openTagEvent;
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
-        if (directoryView.tree() instanceof JTree tree) {
+        if (collectionsView.tree() instanceof JTree tree) {
             handleMouseClick(e, tree);
         }
     }
@@ -40,8 +41,10 @@ public class XDirectoryViewMouseAdapter extends MouseAdapter {
             if (e.getClickCount() == 2) {
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) selPath.getLastPathComponent();
                 Object userObject = node.getUserObject();
-                if (Objects.requireNonNull(userObject) instanceof XFile file) {
-                    //xEditorPanel.openFile(file);
+                if (Objects.requireNonNull(userObject) instanceof Tag tag) {
+                    openTagEvent.fire(new OpenTagEvent(tag));
+                } else {
+                    LOGGER.warnf("User object is not a Tag: %s", userObject);
                 }
             }
         }

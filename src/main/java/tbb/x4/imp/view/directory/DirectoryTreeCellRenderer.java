@@ -14,11 +14,12 @@ public class DirectoryTreeCellRenderer extends DefaultTreeCellRenderer {
         DirectoryTreeCellRenderer component = (DirectoryTreeCellRenderer) super.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
         if (leaf) {
             DefaultMutableTreeNode treeNode = ((DefaultMutableTreeNode) value);
-            XFsElement element = (XFsElement) treeNode.getUserObject();
-            if (element instanceof XFile xFile) {
-                String[] parts = xFile.name().split("\\.");
-                if (parts[parts.length - 1].equalsIgnoreCase("xml")) {
-                    component.setIcon(new DirectoryTreeLeafIcon(Color.GREEN));
+            if (treeNode.getUserObject() instanceof XFsElement element) {
+                if (element instanceof XFile xFile) {
+                    String[] parts = xFile.name().split("\\.");
+                    if (parts[parts.length - 1].equalsIgnoreCase("xml")) {
+                        component.setIcon(new DirectoryTreeLeafIcon(Color.GREEN));
+                    }
                 }
             }
         }

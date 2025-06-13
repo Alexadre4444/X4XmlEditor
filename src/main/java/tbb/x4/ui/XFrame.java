@@ -36,8 +36,8 @@ public class XFrame {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setJMenuBar(xMenuBar.menuBar());
         frame.setSize(device.getDisplayMode().getWidth(), device.getDisplayMode().getHeight());
-        frame.setVisible(true);
         frame.add(xMainPanel.mainPanel());
+        frame.setVisible(true);
     }
 
     public void exit() {

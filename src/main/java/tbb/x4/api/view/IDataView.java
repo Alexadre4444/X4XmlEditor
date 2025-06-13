@@ -30,9 +30,4 @@ public interface IDataView {
      */
     @Nullable
     Icon icon();
-
-    /**
-     * Return the view's priority for sorting.
-     */
-    int priority(); // Default priority for sorting views, can be overridden by implementations
 }

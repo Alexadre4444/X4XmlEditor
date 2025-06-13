@@ -10,7 +10,6 @@ import tbb.x4.api.view.IDataView;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Comparator;
 
 @ApplicationScoped
 public class XViewsPanel {
@@ -23,21 +22,41 @@ public class XViewsPanel {
     public XViewsPanel(Instance<IDataView> dataViews) {
         this.dataViews = dataViews;
         tabbedPane = new JTabbedPane();
+        tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
     }
 
     public void onDataViewUpdate(@Observes DataViewUpdatedEvent event) {
         LOGGER.infof("Data view updated: %s", event.dataView().title());
-        refreshComponent();
+        if (!isDataViewPresent(event.dataView())) {
+            addDataView(event.dataView());
+        } else {
+            LOGGER.warnf("Data view '%s' is already present, skipping addition.", event.dataView().title());
+        }
     }
 
-    private void refreshComponent() {
-        tabbedPane.removeAll();
-        dataViews.stream().sorted(Comparator.comparing(IDataView::priority)).forEach(this::addDataView);
-        tabbedPane.revalidate();
+    private boolean isDataViewPresent(IDataView dataView) {
+        for (int i = 0; i < tabbedPane.getTabCount(); i++) {
+            if (tabbedPane.getTitleAt(i).equals(dataView.title())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void addDataView(IDataView dataView) {
-        tabbedPane.addTab(dataView.title(), dataView.icon(), dataView.tree());
+        tabbedPane.insertTab(dataView.title(), dataView.icon(), new JScrollPane(dataView.tree()), null,
+                computeTabIndex(dataView));
+    }
+
+    private int computeTabIndex(IDataView dataView) {
+        int index = 0;
+        for (int i = 0; i < tabbedPane.getTabCount(); i++) {
+            if (tabbedPane.getTitleAt(i).compareTo(dataView.title()) > 0) {
+                index = i;
+                break;
+            }
+        }
+        return index;
     }
 
     public Component component() {
