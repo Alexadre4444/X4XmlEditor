@@ -1,6 +1,6 @@
 package tbb.x4.ui;
 
-import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.intellijthemes.FlatDarkPurpleIJTheme;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.jboss.logging.Logger;
@@ -45,7 +45,7 @@ public class XFrame {
     }
 
     private void setupTheme() {
-        FlatDarkLaf.setup();
+        FlatDarkPurpleIJTheme.setup();
         UIManager.put("Tree.paintLines", true);
         UIManager.put("Tree.showDefaultIcons", true);
     }

@@ -34,9 +34,9 @@ public class XEditorPanel {
     public void addTagEditorTab(Tag tag) {
         String tabTitle = getTabTitle(tag);
         if (tabbedPane.indexOfTab(tabTitle) == -1) {
-            JPanel tagEditorPanel = new JPanel();
-            tabbedPane.addTab(tabTitle, tagEditorPanel);
-            tabbedPane.setSelectedComponent(tagEditorPanel);
+            TagEditorPanel tagEditorPanel = new TagEditorPanel(tag);
+            tabbedPane.addTab(tabTitle, tagEditorPanel.scrollPane());
+            tabbedPane.setSelectedComponent(tagEditorPanel.scrollPane());
             LOGGER.infof("Added new tag editor for: %s", tabTitle);
         } else {
             LOGGER.warnf("Tag editor for '%s' already exists, skipping addition.", tabTitle);
