@@ -8,8 +8,7 @@ public class TagEditorPanel {
     private final JScrollPane scrollPane;
 
     public TagEditorPanel(Tag rootTag) {
-        JTree tagTree = new JTree(new TagTreeModel(rootTag));
-        tagTree.setCellRenderer(new TagTreeCellRenderer());
+        JTree tagTree = new TagTree(rootTag);
         this.scrollPane = new JScrollPane(tagTree);
     }
 

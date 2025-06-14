@@ -19,7 +19,7 @@ public class TagTreeCellRenderer extends DefaultTreeCellRenderer {
         TagTreeCellRenderer component = (TagTreeCellRenderer) super.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
         if (value instanceof Attribute(AttributeDescriptor descriptor, ElementValue value1)) {
             component.setIcon(new AttributeTreeLeafIcon(ATTRIBUTE_COLOR));
-            component.setText("%s=%s".formatted(descriptor.name(), value1.stringValue()));
+            component.setText("%s %s".formatted(descriptor.name(), value1.stringValue()));
         } else if (value instanceof Tag) {
             component.setIcon(getIconForTag(expanded));
         }
