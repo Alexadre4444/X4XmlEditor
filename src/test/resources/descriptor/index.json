@@ -1,0 +1,11 @@
+{
+  "attributes": [
+    "common-attributes.json"
+  ],
+  "collections": [
+    "collections.json"
+  ],
+  "descriptors": [
+    "wares.json"
+  ]
+}

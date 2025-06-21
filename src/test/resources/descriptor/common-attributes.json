@@ -1,0 +1,10 @@
+{
+  "id": {
+    "type": "string",
+    "description": "Unique identifier of the entity."
+  },
+  "name": {
+    "type": "string",
+    "description": "Name of the entity."
+  }
+}
