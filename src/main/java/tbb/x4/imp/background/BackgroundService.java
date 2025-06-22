@@ -1,11 +1,10 @@
 package tbb.x4.imp.background;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Event;
+import jakarta.inject.Inject;
 import org.jboss.logging.Logger;
-import tbb.x4.api.background.IBackgroundService;
-import tbb.x4.api.background.IBackgroundTask;
-import tbb.x4.api.background.TaskId;
-import tbb.x4.api.background.TaskProgress;
+import tbb.x4.api.background.*;
 
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -13,13 +12,18 @@ import java.util.concurrent.ConcurrentHashMap;
 @ApplicationScoped
 public class BackgroundService implements IBackgroundService {
     private static final Logger LOGGER = Logger.getLogger(BackgroundService.class);
-    private final ConcurrentHashMap<TaskId, Boolean> taskCancellationStatus = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<TaskId, TaskProgress> taskProgressMap = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<TaskId, TaskInfos> taskInfosMap = new ConcurrentHashMap<>();
+    private final Event<TaskProgressEvent> taskProgressEvent;
+
+    @Inject
+    public BackgroundService(Event<TaskProgressEvent> taskProgressEvent) {
+        this.taskProgressEvent = taskProgressEvent;
+    }
 
     @Override
     public TaskId doTask(IBackgroundTask task) {
         TaskId taskId = new TaskId();
-        taskCancellationStatus.put(taskId, false);
+        taskInfosMap.put(taskId, new TaskInfos(taskId, task, TaskProgress.started(), false));
         LOGGER.infof("Starting task: %s", task.label());
         publishProgress(taskId, TaskProgress.started());
         new Thread(makeTaskRunnable(taskId, task)).start();
@@ -38,30 +42,48 @@ public class BackgroundService implements IBackgroundService {
             } catch (Exception e) {
                 LOGGER.errorf(e, "Error executing task %s", taskId);
                 publishProgress(taskId, TaskProgress.failed(e.getMessage()));
-            } finally {
-                taskCancellationStatus.remove(taskId);
             }
         };
     }
 
     @Override
     public void cancelTask(TaskId id) {
-        taskCancellationStatus.computeIfPresent(id, (taskId, value) -> {
+        taskInfosMap.computeIfPresent(id, (taskId, value) -> {
             LOGGER.infof("Cancelling task: %s", taskId);
-            return true; // Mark the task as cancelled
+            return new TaskInfos(
+                    taskId,
+                    value.task(),
+                    TaskProgress.cancelled(),
+                    true
+            );
         });
     }
 
     void publishProgress(TaskId taskId, TaskProgress progress) {
-        taskProgressMap.put(taskId, progress);
+        taskInfosMap.put(taskId, new TaskInfos(
+                taskId,
+                taskInfosMap.get(taskId).task(),
+                progress,
+                taskInfosMap.get(taskId).isCancelled()
+        ));
+        taskProgressEvent.fire(new TaskProgressEvent(taskInfosMap.get(taskId).task(), progress));
     }
 
     boolean isTaskCancelled(TaskId taskId) {
-        return taskCancellationStatus.getOrDefault(taskId, false);
+        return taskInfosMap.getOrDefault(taskId, new TaskInfos(taskId, null, TaskProgress.started(), false))
+                .isCancelled;
     }
 
     @Override
     public Optional<TaskProgress> getTaskProgress(TaskId id) {
-        return Optional.ofNullable(taskProgressMap.get(id));
+        return Optional.ofNullable(taskInfosMap.get(id)).map(TaskInfos::progress);
+    }
+
+    private record TaskInfos(
+            TaskId taskId,
+            IBackgroundTask task,
+            TaskProgress progress,
+            boolean isCancelled
+    ) {
     }
 }
