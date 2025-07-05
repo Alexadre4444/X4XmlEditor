@@ -12,6 +12,15 @@ public interface ITaskObserver {
     void publishProgress(double progress, String message);
 
     /**
+     * Publishes a message about the current state of the task.
+     * This method is called to update the observers about the current state of a task.
+     * It is used when the progress is undetermined.
+     *
+     * @param message the message describing the current state of the task
+     */
+    void publishProgress(String message);
+
+    /**
      * Call this method to indicate that the task can be safely stop now if it has been requested to cancel.
      */
     void cancelIfRequested();

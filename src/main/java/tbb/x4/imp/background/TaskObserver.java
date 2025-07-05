@@ -1,9 +1,6 @@
 package tbb.x4.imp.background;
 
-import tbb.x4.api.background.ITaskObserver;
-import tbb.x4.api.background.TaskId;
-import tbb.x4.api.background.TaskProgress;
-import tbb.x4.api.background.TaskStatus;
+import tbb.x4.api.background.*;
 
 record TaskObserver(BackgroundService backgroundService, TaskId observedId) implements ITaskObserver {
     TaskObserver {
@@ -17,7 +14,12 @@ record TaskObserver(BackgroundService backgroundService, TaskId observedId) impl
 
     @Override
     public void publishProgress(double progress, String message) {
-        backgroundService.publishProgress(observedId, new TaskProgress(progress, TaskStatus.RUNNING, message));
+        backgroundService.publishProgress(observedId, new TaskProgress(Progress.determined(progress), TaskStatus.RUNNING, message));
+    }
+
+    @Override
+    public void publishProgress(String message) {
+        backgroundService.publishProgress(observedId, new TaskProgress(Progress.undetermined(), TaskStatus.RUNNING, message));
     }
 
     @Override

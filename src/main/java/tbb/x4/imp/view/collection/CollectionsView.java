@@ -10,6 +10,7 @@ import tbb.x4.api.parser.Tag;
 import tbb.x4.api.project.CollectionsLoadEvent;
 import tbb.x4.api.view.DataViewUpdatedEvent;
 import tbb.x4.api.view.IDataView;
+import tbb.x4.ui.util.SwingEvent;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -20,12 +21,12 @@ import java.util.List;
 @ApplicationScoped
 public class CollectionsView implements IDataView {
 
-    private final Event<DataViewUpdatedEvent> dataViewUpdatedEvent;
+    private final SwingEvent<DataViewUpdatedEvent> dataViewUpdatedEvent;
     private final JTree tree;
 
     @Inject
     public CollectionsView(Event<DataViewUpdatedEvent> dataViewUpdatedEvent, CollectionsViewMouseAdapter mouseAdapter) {
-        this.dataViewUpdatedEvent = dataViewUpdatedEvent;
+        this.dataViewUpdatedEvent = new SwingEvent<>(dataViewUpdatedEvent);
         tree = new JTree(new DefaultTreeModel(createDefaultRootNode()));
         tree.addMouseListener(mouseAdapter);
     }

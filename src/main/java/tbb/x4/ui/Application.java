@@ -5,6 +5,8 @@ import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 import org.jboss.weld.environment.se.events.ContainerInitialized;
 
+import javax.swing.*;
+
 
 @ApplicationScoped
 public class Application {
@@ -17,6 +19,6 @@ public class Application {
     }
 
     public void start(@Observes ContainerInitialized startEvent) {
-        xFrame.init();
+        SwingUtilities.invokeLater(xFrame::init);
     }
 }

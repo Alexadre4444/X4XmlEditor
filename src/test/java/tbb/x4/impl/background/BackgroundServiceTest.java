@@ -41,7 +41,7 @@ public class BackgroundServiceTest {
 
         startTask.set(true);
         await().until(() -> backgroundService.getTaskProgress(taskId).isPresent() &&
-                backgroundService.getTaskProgress(taskId).get().progress() == 0.5);
+                backgroundService.getTaskProgress(taskId).get().progress().progress() == 0.5);
         taskProgress = backgroundService.getTaskProgress(taskId);
         assertTrue(taskProgress.isPresent());
         assertEquals(TaskProgress.running(0.5, "Task is running"), taskProgress.get());

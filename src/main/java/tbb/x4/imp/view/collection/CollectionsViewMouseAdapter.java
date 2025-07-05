@@ -6,6 +6,7 @@ import jakarta.inject.Inject;
 import org.jboss.logging.Logger;
 import tbb.x4.api.parser.Tag;
 import tbb.x4.ui.panel.editor.XEditorPanel;
+import tbb.x4.ui.util.SwingEvent;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -19,12 +20,12 @@ public class CollectionsViewMouseAdapter extends MouseAdapter {
     private static final Logger LOGGER = Logger.getLogger(XEditorPanel.class);
 
     private final CollectionsView collectionsView;
-    private final Event<OpenTagEvent> openTagEvent;
+    private final SwingEvent<OpenTagEvent> openTagEvent;
 
     @Inject
     public CollectionsViewMouseAdapter(CollectionsView collectionsView, Event<OpenTagEvent> openTagEvent) {
         this.collectionsView = collectionsView;
-        this.openTagEvent = openTagEvent;
+        this.openTagEvent = new SwingEvent<>(openTagEvent);
     }
 
     @Override

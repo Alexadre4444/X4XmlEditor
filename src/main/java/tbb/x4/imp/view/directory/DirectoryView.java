@@ -11,6 +11,7 @@ import tbb.x4.api.directory.XFsElement;
 import tbb.x4.api.project.ProjectLoadEvent;
 import tbb.x4.api.view.DataViewUpdatedEvent;
 import tbb.x4.api.view.IDataView;
+import tbb.x4.ui.util.SwingEvent;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -21,13 +22,13 @@ import java.awt.*;
 public class DirectoryView implements IDataView {
 
     private final XDirectoryViewMouseAdapter mouseAdapter;
-    private final Event<DataViewUpdatedEvent> dataViewUpdatedEvent;
+    private final SwingEvent<DataViewUpdatedEvent> dataViewUpdatedEvent;
     private final JTree tree;
 
     @Inject
     public DirectoryView(XDirectoryViewMouseAdapter mouseAdapter, Event<DataViewUpdatedEvent> dataViewUpdatedEvent) {
         this.mouseAdapter = mouseAdapter;
-        this.dataViewUpdatedEvent = dataViewUpdatedEvent;
+        this.dataViewUpdatedEvent = new SwingEvent<>(dataViewUpdatedEvent);
         tree = new JTree(new DefaultTreeModel(createDefaultRootNode()));
         tree.setCellRenderer(new DirectoryTreeCellRenderer());
         tree.addMouseListener(mouseAdapter);

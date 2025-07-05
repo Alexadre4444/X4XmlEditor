@@ -1,5 +1,6 @@
 package tbb.x4.ui.panel.views;
 
+import com.formdev.flatlaf.ui.FlatScrollPaneBorder;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.enterprise.inject.Instance;
@@ -16,16 +17,20 @@ public class XViewsPanel {
     private final Logger LOGGER = Logger.getLogger(XViewsPanel.class);
 
     private final JTabbedPane tabbedPane;
-    private final Instance<IDataView> dataViews;
 
     @Inject
     public XViewsPanel(Instance<IDataView> dataViews) {
-        this.dataViews = dataViews;
         tabbedPane = new JTabbedPane();
         tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
+        tabbedPane.setBorder(new FlatScrollPaneBorder());
+
     }
 
     public void onDataViewUpdate(@Observes DataViewUpdatedEvent event) {
+        handleDataViewUpdate(event);
+    }
+
+    private void handleDataViewUpdate(DataViewUpdatedEvent event) {
         LOGGER.infof("Data view updated: %s", event.dataView().title());
         if (!isDataViewPresent(event.dataView())) {
             addDataView(event.dataView());

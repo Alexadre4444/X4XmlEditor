@@ -1,5 +1,6 @@
 package tbb.x4.ui.panel.editor;
 
+import com.formdev.flatlaf.ui.FlatScrollPaneBorder;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import org.jboss.logging.Logger;
@@ -17,9 +18,10 @@ public class XEditorPanel {
     private final JTabbedPane tabbedPane;
 
     public XEditorPanel() {
-        this.tabbedPane = new JTabbedPane();
-        this.tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
-        this.tabbedPane.setTabPlacement(JTabbedPane.TOP);
+        tabbedPane = new JTabbedPane();
+        tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
+        tabbedPane.setTabPlacement(JTabbedPane.TOP);
+        tabbedPane.setBorder(new FlatScrollPaneBorder());
     }
 
     public JTabbedPane tabbedPane() {

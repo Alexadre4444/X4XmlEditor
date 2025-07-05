@@ -5,6 +5,7 @@ import jakarta.enterprise.event.Event;
 import jakarta.inject.Inject;
 import org.jboss.logging.Logger;
 import tbb.x4.api.background.*;
+import tbb.x4.ui.util.SwingEvent;
 
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -13,11 +14,11 @@ import java.util.concurrent.ConcurrentHashMap;
 public class BackgroundService implements IBackgroundService {
     private static final Logger LOGGER = Logger.getLogger(BackgroundService.class);
     private final ConcurrentHashMap<TaskId, TaskInfos> taskInfosMap = new ConcurrentHashMap<>();
-    private final Event<TaskProgressEvent> taskProgressEvent;
+    private final SwingEvent<TaskProgressEvent> taskProgressEvent;
 
     @Inject
     public BackgroundService(Event<TaskProgressEvent> taskProgressEvent) {
-        this.taskProgressEvent = taskProgressEvent;
+        this.taskProgressEvent = new SwingEvent<>(taskProgressEvent);
     }
 
     @Override

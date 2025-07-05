@@ -2,6 +2,7 @@ package tbb.x4.ui.menu.file;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import tbb.x4.api.background.IBackgroundService;
 import tbb.x4.api.directory.IXDirectoryService;
 import tbb.x4.api.project.IProjectService;
 import tbb.x4.ui.menu.IMenuItem;
@@ -17,11 +18,13 @@ public class XItemOpen implements IMenuItem {
     private final JMenuItem item;
     private final IXDirectoryService directoryService;
     private final IProjectService projectService;
+    private final IBackgroundService backgroundService;
 
     @Inject
-    public XItemOpen(IXDirectoryService directoryService, IProjectService projectService) {
+    public XItemOpen(IXDirectoryService directoryService, IProjectService projectService, IBackgroundService backgroundService) {
         this.directoryService = directoryService;
         this.projectService = projectService;
+        this.backgroundService = backgroundService;
         item = new JMenuItem("Open", 'O');
         item.addActionListener(this::displayOpenFrame);
     }
